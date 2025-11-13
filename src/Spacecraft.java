@@ -1,26 +1,47 @@
 import java.awt.*;
 
 public class Spacecraft extends Element {
-    private boolean movingLeft, movingRight;
+    private boolean movingLeft, movingRight, firing;
     private boolean shield, rapidFire;
-    private int baseSpeed, shotCooldown;
-    private int powerUpTimer;
+    private int baseSpeed, shotCooldown, powerUpTimer;
+    private int shotsFired, maxShotsPerHold = 10;
+
+    private double xVelocity = 0;
+    private final double accel = 0.3;
+    private final double friction = 0.1;
+    private double maxSpeed;
 
     public Spacecraft(int x, int y, int width, int height, int speed) {
         super(x, y, width, height, speed);
         this.baseSpeed = speed;
+        this.maxSpeed = speed;
     }
 
     @Override
     public void update() {
-        if (movingLeft && x > 0) x -= speed;
-        if (movingRight && x + width < 800) x += speed;
+        // horizontal movement physics
+        if (movingLeft)  xVelocity -= accel;
+        if (movingRight) xVelocity += accel;
+
+        if (xVelocity >  maxSpeed) xVelocity =  maxSpeed;
+        if (xVelocity < -maxSpeed) xVelocity = -maxSpeed;
+
+        // natural friction when idle
+        if (!movingLeft && !movingRight) {
+            if (xVelocity > 0) xVelocity = Math.max(0, xVelocity - friction);
+            else if (xVelocity < 0) xVelocity = Math.min(0, xVelocity + friction);
+        }
+
+        x += xVelocity;
+        if (x < 0) x = 0;
+        if (x + width > 800) x = 800 - width;
+
         if (shotCooldown > 0) shotCooldown--;
 
         if (powerUpTimer > 0) {
             powerUpTimer--;
             if (powerUpTimer == 0) {
-                speed = baseSpeed;
+                maxSpeed = baseSpeed;
                 rapidFire = false;
                 shield = false;
             }
@@ -40,17 +61,32 @@ public class Spacecraft extends Element {
         }
     }
 
-    public boolean canShoot() {
-        return shotCooldown == 0;
+    // --- Shooting logic ---
+    public boolean shouldShoot() {
+        if (!firing || shotCooldown > 0) return false;
+        if (shotsFired >= maxShotsPerHold) return false;
+
+        shootCooldown();
+        shotsFired++;
+        return true;
     }
 
-    public void shootCooldown() {
+    private void shootCooldown() {
         shotCooldown = rapidFire ? 10 : 25;
     }
 
+    public void setFiring(boolean value) {
+        if (!firing && value) {
+            // just pressed SPACE
+            shotsFired = 0;
+        }
+        firing = value;
+    }
+
+    // --- Power-up system ---
     public void activatePowerUp(String type) {
         if (type.equals("speed")) {
-            speed = baseSpeed * 2;
+            maxSpeed = baseSpeed * 2;
         } else if (type.equals("rapidfire")) {
             rapidFire = true;
         } else if (type.equals("shield")) {
@@ -59,15 +95,8 @@ public class Spacecraft extends Element {
         powerUpTimer = 300;
     }
 
-    public void setMovingLeft(boolean value) {
-        movingLeft = value;
-    }
-
-    public void setMovingRight(boolean value) {
-        movingRight = value;
-    }
-
-    public boolean hasShield() {
-        return shield;
-    }
+    // --- Movement helpers ---
+    public void setMovingLeft(boolean value) { movingLeft = value; }
+    public void setMovingRight(boolean value) { movingRight = value; }
+    public boolean hasShield() { return shield; }
 }
