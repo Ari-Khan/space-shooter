@@ -24,24 +24,36 @@ public class Game extends JPanel implements Runnable, KeyListener {
     private final Spacecraft player;
     private final Text text;
 
+    // Initialize sound objects
+    private final Sound shootSound = new Sound("src/shot.wav");
+    private final Sound explosionSound = new Sound("src/explosion.wav");
+    private final Sound powerSound = new Sound("src/powerUp.wav");
+
     // Initialize object lists
     private final ArrayList<Shot> shots = new ArrayList<>();
     private final ArrayList<Enemy> enemies = new ArrayList<>();
     private final ArrayList<PowerUp> powerUps = new ArrayList<>();
 
+    // Initialize default variable values
     private boolean running = true;
     private int enemySpawnTimer = 0;
     private final int width = 800, height = 600;
 
+    // A constructor to set up the game 
     public Game() {
+        // Set up panel
         setPreferredSize(new Dimension(width, height));
         setBackground(Color.BLACK);
+
+        // Set up key listener
         setFocusable(true);
         addKeyListener(this);
 
+        // Create game objects
         player = new Spacecraft(width / 2 - 25, height - 80, 50, 25, 15);
         text = new Text(width, height);
 
+        // Start game thread
         new Thread(this).start();
     }
 
@@ -58,6 +70,7 @@ public class Game extends JPanel implements Runnable, KeyListener {
 
                 if (player.shouldShoot()) {
                     shots.add(new Shot(player.x + player.width / 2 - 2, player.y));
+                    shootSound.play();
                 }
 
                 shots.removeIf(s -> s.isOffScreen(height));
@@ -72,6 +85,7 @@ public class Game extends JPanel implements Runnable, KeyListener {
                             enemies.remove(i);
                             shots.remove(j);
                             text.addScore(10);
+                            explosionSound.play();
                             i--;
                             break;
                         }
@@ -83,6 +97,7 @@ public class Game extends JPanel implements Runnable, KeyListener {
                     PowerUp p = powerUps.get(i);
                     if (playerBounds.intersects(p.getBounds())) {
                         player.activatePowerUp(p.getType());
+                        powerSound.play();
                         powerUps.remove(i);
                         i--;
                     }
@@ -93,6 +108,7 @@ public class Game extends JPanel implements Runnable, KeyListener {
                     if (playerBounds.intersects(e.getBounds())) {
                         text.loseLife();
                         enemies.remove(i);
+                        explosionSound.play();
                         i--;
 
                         if (text.isGameOver()) break;
@@ -104,7 +120,14 @@ public class Game extends JPanel implements Runnable, KeyListener {
                         player.x - 15, player.y - 15,
                         player.width + 30, player.height + 30
                     );
-                    enemies.removeIf(enemy -> shieldArea.intersects(enemy.getBounds()));
+                    for (int i = 0; i < enemies.size(); i++) {
+                        Enemy enemy = enemies.get(i);
+                        if (shieldArea.intersects(enemy.getBounds())) {
+                            enemies.remove(i);
+                            explosionSound.play();
+                            i--;
+                        }
+                    }
                 }
 
                 if (enemySpawnTimer % 20 == 0)
@@ -132,7 +155,7 @@ public class Game extends JPanel implements Runnable, KeyListener {
         shots.forEach(s -> s.draw(g));
         enemies.forEach(e -> e.draw(g));
         powerUps.forEach(p -> p.draw(g));
-        text.draw(g);  // ⭐ draws score + lives
+        text.draw(g);
     }
 
     @Override
