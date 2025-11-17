@@ -4,7 +4,7 @@ public class PowerUp extends Element {
     private final String type;
 
     public PowerUp(int x, int y, String type) {
-        super(x, y, 25, 25, 3);
+        super(x, y, 25, 25, 5);
         this.type = type;
     }
 

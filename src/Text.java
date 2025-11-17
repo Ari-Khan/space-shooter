@@ -3,17 +3,27 @@ import java.awt.*;
 public class Text {
     private int score;
     private boolean gameOver;
+    private int lives = 3;
     private final int width, height;
 
     public Text(int width, int height) {
         this.width = width;
         this.height = height;
-        this.score = 0;
-        this.gameOver = false;
     }
 
     public void addScore(int amount) {
         score += amount;
+    }
+
+    public void loseLife() {
+        lives--;
+        if (lives <= 0) {
+            gameOver = true;
+        }
+    }
+
+    public int getLives() {
+        return lives;
     }
 
     public void setGameOver(boolean value) {
@@ -33,9 +43,12 @@ public class Text {
         g.setFont(new Font("Arial", Font.BOLD, 18));
         g.drawString("Score: " + score, 10, 20);
 
+        String livesText = "Lives: " + lives;
+        g.drawString(livesText, width - 20 - g.getFontMetrics().stringWidth(livesText), 20);
+
         if (gameOver) {
             g.setFont(new Font("Arial", Font.BOLD, 48));
-            g.setColor(Color.RED);
+            g.setColor(Color.WHITE);
             String msg = "GAME OVER";
             g.drawString(msg, width / 2 - g.getFontMetrics().stringWidth(msg) / 2, height / 2 - 30);
 

@@ -2,7 +2,7 @@ import java.awt.*;
 
 public class Enemy extends Element {
     public Enemy(int x, int y) {
-        super(x, y, 50, 40, 2);
+        super(x, y, 50, 40, 4);
     }
 
     @Override
@@ -12,7 +12,7 @@ public class Enemy extends Element {
 
     @Override
     public void draw(Graphics g) {
-        g.setColor(Color.RED);
+        g.setColor(new Color(0xFF3300));
         int centerX = x + width / 2;
         int centerY = y + height / 2;
         int radius = width / 2;

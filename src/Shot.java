@@ -2,7 +2,7 @@ import java.awt.*;
 
 public class Shot extends Element {
     public Shot(int x, int y) {
-        super(x, y, 4, 12, 10);
+        super(x, y, 4, 12, 15);
     }
 
     @Override

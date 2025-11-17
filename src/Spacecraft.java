@@ -19,22 +19,27 @@ public class Spacecraft extends Element {
 
     @Override
     public void update() {
-        // horizontal movement physics
         if (movingLeft)  xVelocity -= accel;
         if (movingRight) xVelocity += accel;
 
         if (xVelocity >  maxSpeed) xVelocity =  maxSpeed;
         if (xVelocity < -maxSpeed) xVelocity = -maxSpeed;
 
-        // natural friction when idle
         if (!movingLeft && !movingRight) {
             if (xVelocity > 0) xVelocity = Math.max(0, xVelocity - friction);
             else if (xVelocity < 0) xVelocity = Math.min(0, xVelocity + friction);
         }
 
         x += xVelocity;
-        if (x < 0) x = 0;
-        if (x + width > 800) x = 800 - width;
+
+        if (x < 0) {
+            x = 0;
+            xVelocity = -xVelocity * 0.5;
+        }
+        if (x + width > 800) {
+            x = 800 - width;
+            xVelocity = -xVelocity * 0.5;
+        }
 
         if (shotCooldown > 0) shotCooldown--;
 
@@ -61,10 +66,9 @@ public class Spacecraft extends Element {
         }
     }
 
-    // --- Shooting logic ---
     public boolean shouldShoot() {
-        if (!firing || shotCooldown > 0) return false;
-        if (shotsFired >= maxShotsPerHold) return false;
+        if ((!firing || shotCooldown > 0)) return false;
+        if ((shotsFired >= maxShotsPerHold) && !rapidFire) return false;
 
         shootCooldown();
         shotsFired++;
@@ -72,18 +76,16 @@ public class Spacecraft extends Element {
     }
 
     private void shootCooldown() {
-        shotCooldown = rapidFire ? 10 : 25;
+        shotCooldown = rapidFire ? 7 : 20;
     }
 
     public void setFiring(boolean value) {
         if (!firing && value) {
-            // just pressed SPACE
             shotsFired = 0;
         }
         firing = value;
     }
 
-    // --- Power-up system ---
     public void activatePowerUp(String type) {
         if (type.equals("speed")) {
             maxSpeed = baseSpeed * 2;
@@ -95,7 +97,6 @@ public class Spacecraft extends Element {
         powerUpTimer = 300;
     }
 
-    // --- Movement helpers ---
     public void setMovingLeft(boolean value) { movingLeft = value; }
     public void setMovingRight(boolean value) { movingRight = value; }
     public boolean hasShield() { return shield; }

@@ -20,7 +20,7 @@ public class Game extends JPanel implements Runnable, KeyListener {
         setFocusable(true);
         addKeyListener(this);
 
-        player = new Spacecraft(width / 2 - 25, height - 80, 50, 25, 10);
+        player = new Spacecraft(width / 2 - 25, height - 80, 50, 25, 15);
         text = new Text(width, height);
 
         new Thread(this).start();
@@ -32,23 +32,19 @@ public class Game extends JPanel implements Runnable, KeyListener {
             if (!text.isGameOver()) {
                 enemySpawnTimer++;
 
-                // Update entities
                 player.update();
                 shots.forEach(Shot::update);
                 enemies.forEach(Enemy::update);
                 powerUps.forEach(PowerUp::update);
 
-                // Player firing
                 if (player.shouldShoot()) {
                     shots.add(new Shot(player.x + player.width / 2 - 2, player.y));
                 }
 
-                // Remove off-screen
                 shots.removeIf(s -> s.isOffScreen(height));
                 enemies.removeIf(e -> e.isOffScreen(height));
                 powerUps.removeIf(p -> p.isOffScreen(height));
 
-                // Collisions: shots vs enemies
                 for (int i = 0; i < enemies.size(); i++) {
                     Enemy enemy = enemies.get(i);
                     for (int j = 0; j < shots.size(); j++) {
@@ -63,7 +59,6 @@ public class Game extends JPanel implements Runnable, KeyListener {
                     }
                 }
 
-                // Collisions: powerups
                 Rectangle playerBounds = player.getBounds();
                 for (int i = 0; i < powerUps.size(); i++) {
                     PowerUp p = powerUps.get(i);
@@ -74,24 +69,29 @@ public class Game extends JPanel implements Runnable, KeyListener {
                     }
                 }
 
-                // Check collision: player vs enemy (game over)
-                for (Enemy e : enemies) {
-                    if (player.getBounds().intersects(e.getBounds())) {
-                        text.setGameOver(true);
-                        break;
+                for (int i = 0; i < enemies.size(); i++) {
+                    Enemy e = enemies.get(i);
+                    if (playerBounds.intersects(e.getBounds())) {
+                        text.loseLife();
+                        enemies.remove(i);
+                        i--;
+
+                        if (text.isGameOver()) break;
                     }
                 }
 
-                // Shield hits
                 if (player.hasShield()) {
-                    Rectangle shieldArea = new Rectangle(player.x - 15, player.y - 15, player.width + 30, player.height + 30);
+                    Rectangle shieldArea = new Rectangle(
+                        player.x - 15, player.y - 15,
+                        player.width + 30, player.height + 30
+                    );
                     enemies.removeIf(enemy -> shieldArea.intersects(enemy.getBounds()));
                 }
 
-                // Spawning
-                if (enemySpawnTimer % 100 == 0)
+                if (enemySpawnTimer % 20 == 0)
                     enemies.add(new Enemy((int) (Math.random() * (width - 50)), 0));
-                if (enemySpawnTimer % 200 == 0) {
+
+                if (enemySpawnTimer % 300 == 0) {
                     String[] types = {"speed", "rapidfire", "shield"};
                     String type = types[(int) (Math.random() * types.length)];
                     powerUps.add(new PowerUp((int) (Math.random() * (width - 25)), 0, type));
@@ -113,7 +113,7 @@ public class Game extends JPanel implements Runnable, KeyListener {
         shots.forEach(s -> s.draw(g));
         enemies.forEach(e -> e.draw(g));
         powerUps.forEach(p -> p.draw(g));
-        text.draw(g);
+        text.draw(g);  // ⭐ draws score + lives
     }
 
     @Override
