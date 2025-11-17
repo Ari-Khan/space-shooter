@@ -1,4 +1,5 @@
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics;
 
 public class Enemy extends Element {
     public Enemy(int x, int y) {
