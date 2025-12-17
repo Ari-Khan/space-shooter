@@ -59,7 +59,7 @@ public class Text {
         return score;
     } // End of getScore method
 
-    // Method to draw the text on the screen
+    // Method to draw the text on the screen (Method Overloading)
     public void draw(Graphics g) {
         // Draw score and lives at the top corners
         g.setColor(Color.WHITE);

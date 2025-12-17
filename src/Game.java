@@ -21,7 +21,7 @@ import java.util.ArrayList;
 
 // Main game class which extends JPanel and uses the Runnable and KeyListener interfaces
 public class Game extends JPanel implements Runnable, KeyListener {
-    // Initialize objects
+    // Initialize objects (Encapsulation)
     private final Spacecraft player;
     private final Text text;
 
@@ -165,4 +165,4 @@ public class Game extends JPanel implements Runnable, KeyListener {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     } // End of main method
-} // End of Game class
+} // End of Game class 

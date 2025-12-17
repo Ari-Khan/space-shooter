@@ -18,7 +18,7 @@ public class Enemy extends Element {
         super(x, y, 50, 40, 4);
     } // End of constructor
 
-    // Override the update method to define enemy movement (downward)
+    // Override the update method to define enemy movement (downward) (Method Overriding)
     @Override
     public void update() {
         y += speed;

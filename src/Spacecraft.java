@@ -10,7 +10,7 @@
 import java.awt.Color;
 import java.awt.Graphics;
 
-// Class representing the player's spacecraft
+// Class representing the player's spacecraft (Inheritance)
 public class Spacecraft extends Element {
     // Attributes for movement and power-ups
     private boolean movingLeft, movingRight, firing;
@@ -137,4 +137,4 @@ public class Spacecraft extends Element {
     public void setMovingLeft(boolean value) { movingLeft = value; }
     public void setMovingRight(boolean value) { movingRight = value; }
     public boolean hasShield() { return shield; }
-}
+} // End of Spacecraft class

@@ -10,7 +10,7 @@
 import java.awt.Graphics;
 import java.awt.Rectangle;
 
-// Abstract class representing a generic game element
+// Abstract class representing a generic game element (Abstraction)
 public abstract class Element {
     // Protected attributes for position, size, and speed
     protected int x, y, width, height, speed;
@@ -24,7 +24,7 @@ public abstract class Element {
         this.speed = speed;
     } // End of constructor
 
-    // Abstract methods to be implemented by subclasses
+    // Abstract methods to be implemented by subclasses (Polymorphism)
     public abstract void update();
     public abstract void draw(Graphics g);
 
